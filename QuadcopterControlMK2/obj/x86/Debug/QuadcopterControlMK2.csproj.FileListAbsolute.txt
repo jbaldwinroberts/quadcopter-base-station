@@ -1,0 +1,39 @@
+C:\Users\Joe\Dropbox\Projects\Quad MK4\QuadcopterControlMK2\QuadcopterControlMK2\bin\Debug\QuadcopterControlMK2.exe
+C:\Users\Joe\Dropbox\Projects\Quad MK4\QuadcopterControlMK2\QuadcopterControlMK2\bin\Debug\QuadcopterControlMK2.pdb
+C:\Users\Joe\Dropbox\Projects\Quad MK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\MainWindow.baml
+C:\Users\Joe\Dropbox\Projects\Quad MK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\MainWindow.g.cs
+C:\Users\Joe\Dropbox\Projects\Quad MK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\App.g.cs
+C:\Users\Joe\Dropbox\Projects\Quad MK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\QuadcopterControlMK2_MarkupCompile.cache
+C:\Users\Joe\Dropbox\Projects\Quad MK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\QuadcopterControlMK2.g.resources
+C:\Users\Joe\Dropbox\Projects\Quad MK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\QuadcopterControlMK2.Properties.Resources.resources
+C:\Users\Joe\Dropbox\Projects\Quad MK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\QuadcopterControlMK2.csproj.GenerateResource.Cache
+C:\Users\Joe\Dropbox\Projects\Quad MK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\QuadcopterControlMK2.exe
+C:\Users\Joe\Dropbox\Projects\Quad MK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\QuadcopterControlMK2.pdb
+C:\Users\Joe\Dropbox\Projects\Quad MK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\Joe\Dropbox\Projects\Quad MK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\QuadcopterControlMK2_MarkupCompile.lref
+C:\Users\Joe\Dropbox\Projects\Quad MK4\QuadcopterControlMK2\QuadcopterControlMK2\bin\Debug\System.Windows.Controls.DataVisualization.Toolkit.dll
+C:\Users\Joe\Dropbox\Projects\Quad MK4\QuadcopterControlMK2\QuadcopterControlMK2\bin\Debug\WPFToolkit.dll
+C:\Users\Joe\Dropbox\Projects\Quad MK4\QuadcopterControlMK2\QuadcopterControlMK2\bin\Debug\System.Windows.Controls.DataVisualization.Toolkit.pdb
+C:\Users\Joe\Dropbox\Projects\Quad MK4\QuadcopterControlMK2\QuadcopterControlMK2\bin\Debug\WPFToolkit.pdb
+C:\Users\Joe\Dropbox\Projects\Quad MK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\QuadcopterControlMK2.csprojResolveAssemblyReference.cache
+C:\Users\Joe\Dropbox\Projects\QuadMK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\QuadcopterControlMK2.exe
+C:\Users\Joe\Dropbox\Projects\QuadMK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\QuadcopterControlMK2.pdb
+C:\Users\Joe\Dropbox\Projects\QuadMK4\QuadcopterControlMK2\QuadcopterControlMK2\bin\Debug\QuadcopterControlMK2.exe
+C:\Users\Joe\Dropbox\Projects\QuadMK4\QuadcopterControlMK2\QuadcopterControlMK2\bin\Debug\QuadcopterControlMK2.pdb
+C:\Users\Joe\Dropbox\Projects\QuadMK4\QuadcopterControlMK2\QuadcopterControlMK2\bin\Debug\System.Windows.Controls.DataVisualization.Toolkit.dll
+C:\Users\Joe\Dropbox\Projects\QuadMK4\QuadcopterControlMK2\QuadcopterControlMK2\bin\Debug\WPFToolkit.dll
+C:\Users\Joe\Dropbox\Projects\QuadMK4\QuadcopterControlMK2\QuadcopterControlMK2\bin\Debug\System.Windows.Controls.DataVisualization.Toolkit.pdb
+C:\Users\Joe\Dropbox\Projects\QuadMK4\QuadcopterControlMK2\QuadcopterControlMK2\bin\Debug\WPFToolkit.pdb
+C:\Users\Joe\Dropbox\Projects\QuadMK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\MainWindow.g.cs
+C:\Users\Joe\Dropbox\Projects\QuadMK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\App.g.cs
+C:\Users\Joe\Dropbox\Projects\QuadMK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\Joe\Dropbox\Projects\QuadMK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\QuadcopterControlMK2_MarkupCompile.cache
+C:\Users\Joe\Dropbox\Projects\QuadMK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\QuadcopterControlMK2_MarkupCompile.lref
+C:\Users\Joe\Dropbox\Projects\QuadMK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\MainWindow.baml
+C:\Users\Joe\Dropbox\Projects\QuadMK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\QuadcopterControlMK2.g.resources
+C:\Users\Joe\Dropbox\Projects\QuadMK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\QuadcopterControlMK2.Properties.Resources.resources
+C:\Users\Joe\Dropbox\Projects\QuadMK4\QuadcopterControlMK2\QuadcopterControlMK2\obj\x86\Debug\QuadcopterControlMK2.csproj.GenerateResource.Cache
+C:\Users\Joe\Dropbox\Projects\QuadMK4\QuadcopterControlMK2\QuadcopterControlMK2\bin\Debug\GMap.NET.Core.dll
+C:\Users\Joe\Dropbox\Projects\QuadMK4\QuadcopterControlMK2\QuadcopterControlMK2\bin\Debug\GMap.NET.WindowsPresentation.dll
+C:\Users\Joe\Dropbox\Projects\QuadMK4\QuadcopterControlMK2\QuadcopterControlMK2\bin\Debug\GMap.NET.Core.xml
+C:\Users\Joe\Dropbox\Projects\QuadMK4\QuadcopterControlMK2\QuadcopterControlMK2\bin\Debug\GMap.NET.WindowsPresentation.xml

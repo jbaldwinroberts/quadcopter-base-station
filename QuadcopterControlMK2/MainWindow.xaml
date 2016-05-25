@@ -1,0 +1,1337 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="clr-namespace:QuadcopterControlMK2"
+        xmlns:charting="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
+        xmlns:m="clr-namespace:Microsoft.Maps.MapControl.WPF;assembly=Microsoft.Maps.MapControl.WPF" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="QuadcopterControlMK2.MainWindow"
+        Title="MainWindow" WindowState="Maximized"
+        d:DesignHeight="768.025">
+    <Window.Resources>
+        <c:MyDataSource x:Key="ods"/>
+    </Window.Resources>
+
+    <TabControl HorizontalAlignment="Stretch" Margin="12,12,12,12" x:Name="mainTabControl" VerticalAlignment="Stretch" SelectionChanged="mainTabControl_SelectionChanged">
+        <TabItem Header="Connect" x:Name="connectTabItem">
+            <Grid>
+                <TextBox Height="23" HorizontalAlignment="Stretch" Margin="6,6,0,0" x:Name="portTextBox" VerticalAlignment="Top">
+                    <Binding Path="comPort" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:IntegerValidationRule Min="1" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Content="Connect" Height="23" HorizontalAlignment="Stretch" Margin="6,35,0,0" x:Name="connectButton" VerticalAlignment="Top" Click="connectButton_Click" />
+            </Grid>
+        </TabItem>
+        <TabItem Header="Status" x:Name="statusTabItem">
+            <Grid HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="statusGrid" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Label x:Name="connectedLabel" Content="Connected:" Grid.Row="0" Grid.Column="0"/>
+                <Label x:Name="initialisedLabel" Content="Initialised:" Grid.Row="1" Grid.Column="0"/>
+                <Label x:Name="armedLabel" Content="Armed:" Grid.Row="2" Grid.Column="0"/>
+                <Label x:Name="batteryLabel" Content="Battery Level:" Grid.Row="3" Grid.Column="0"/>
+                <Label x:Name="modeLabel" Content="Mode:" Grid.Row="4" Grid.Column="0"/>
+                <Label x:Name="stateLabel" Content="State:" Grid.Row="5" Grid.Column="0"/>
+                <Label x:Name="navModeLabel" Content="Mode:" Grid.Row="6" Grid.Column="0"/>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Motors Bar" x:Name="motorBarTabItem">
+            <Grid HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="motorGrid" VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <charting:Chart BorderThickness="0" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="motorPowerBarChart" VerticalAlignment="Stretch" Title="Motor Power">
+                    <charting:Chart.Axes>
+                        <charting:LinearAxis Orientation="Y" Minimum="900" Maximum="1900" Title="PWM Pulse Width"/>
+                    </charting:Chart.Axes>
+                    <charting:Chart.LegendStyle>
+                        <Style TargetType="{x:Type Control}">
+                            <Setter Property="Width" Value="0"/>
+                            <Setter Property="Height" Value="0"/>
+                        </Style>
+                    </charting:Chart.LegendStyle>
+                    <charting:ColumnSeries IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding}" />
+                </charting:Chart>
+                <Image Source="clear background.png" Grid.Column="1" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="quadImage" Stretch="Uniform" VerticalAlignment="Stretch"/>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Motors Line" x:Name="motorLineTabItem">
+            <charting:Chart BorderThickness="0" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="motorPowerLineChart" VerticalAlignment="Stretch" Title="Motor Power">
+                <charting:Chart.Axes>
+                    <charting:LinearAxis Orientation="Y" Minimum="900" Maximum="1900" Title="PWM Pulse Width"/>
+                </charting:Chart.Axes>
+                <charting:LineSeries Title="Motor 1" 
+					IndependentValueBinding="{Binding Key}"
+					DependentValueBinding="{Binding Value}"
+					ItemsSource="{Binding MotorPowerLineGraphData[0]}">
+                    <charting:LineSeries.DataPointStyle>
+                        <Style TargetType="{x:Type charting:LineDataPoint}">
+                            <Setter Property="Width" Value="5" />
+                            <Setter Property="Height" Value="5" />
+                            <Setter Property="Background" Value="DarkRed" />
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Setter Property="Opacity" Value="0" />
+                        </Style>
+                    </charting:LineSeries.DataPointStyle>
+                </charting:LineSeries>
+                <charting:LineSeries Title="Motor 2"
+					IndependentValueBinding="{Binding Key}"
+					DependentValueBinding="{Binding Value}"
+					ItemsSource="{Binding MotorPowerLineGraphData[1]}">
+                    <charting:LineSeries.DataPointStyle>
+                        <Style TargetType="{x:Type charting:LineDataPoint}">
+                            <Setter Property="Width" Value="5" />
+                            <Setter Property="Height" Value="5" />
+                            <Setter Property="Background" Value="DarkBlue" />
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Setter Property="Opacity" Value="0" />
+                        </Style>
+                    </charting:LineSeries.DataPointStyle>
+                </charting:LineSeries>
+                <charting:LineSeries Title="Motor 3"
+					IndependentValueBinding="{Binding Key}"
+					DependentValueBinding="{Binding Value}"
+					ItemsSource="{Binding MotorPowerLineGraphData[2]}">
+                    <charting:LineSeries.DataPointStyle>
+                        <Style TargetType="{x:Type charting:LineDataPoint}">
+                            <Setter Property="Width" Value="5" />
+                            <Setter Property="Height" Value="5" />
+                            <Setter Property="Background" Value="DarkGray" />
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Setter Property="Opacity" Value="0" />
+                        </Style>
+                    </charting:LineSeries.DataPointStyle>
+                </charting:LineSeries>
+                <charting:LineSeries Title="Motor 4"
+					IndependentValueBinding="{Binding Key}"
+					DependentValueBinding="{Binding Value}"
+					ItemsSource="{Binding MotorPowerLineGraphData[3]}">
+                    <charting:LineSeries.DataPointStyle>
+                        <Style TargetType="{x:Type charting:LineDataPoint}">
+                            <Setter Property="Width" Value="5" />
+                            <Setter Property="Height" Value="5" />
+                            <Setter Property="Background" Value="DarkGreen" />
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Setter Property="Opacity" Value="0" />
+                        </Style>
+                    </charting:LineSeries.DataPointStyle>
+                </charting:LineSeries>
+            </charting:Chart>
+        </TabItem>
+        <TabItem Header="PID Bar" x:Name="pidBarTabItem">
+            <Grid HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="PIDBarGrid" VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <charting:Chart BorderThickness="0" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="PidBarChart" VerticalAlignment="Stretch" Title="PID Outputs">
+                    <charting:Chart.Axes>
+                        <charting:LinearAxis Orientation="Y" Minimum="-360" Maximum="360" Title="PID Value"/>
+                    </charting:Chart.Axes>
+                    <charting:Chart.LegendStyle>
+                        <Style TargetType="{x:Type Control}">
+                            <Setter Property="Width" Value="0"/>
+                            <Setter Property="Height" Value="0"/>
+                        </Style>
+                    </charting:Chart.LegendStyle>
+                    <charting:ColumnSeries IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding}"/>
+                </charting:Chart>
+            </Grid>
+        </TabItem>
+        <TabItem Header="PID Line" x:Name="pidLineTabItem">
+            <Grid HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="PIDLineGrid" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <charting:Chart BorderThickness="0" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="PidLineChart" VerticalAlignment="Stretch" Title="PID Outputs">
+                    <charting:LineSeries Title="Yaw" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding PidLineGraphData[0]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkRed" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Pitch"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding PidLineGraphData[1]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkBlue" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Roll"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding PidLineGraphData[2]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkGray" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                </charting:Chart>
+            </Grid>
+        </TabItem>
+        <TabItem Header="IMU Bar" x:Name="imuBarTabItem" Height="22" VerticalAlignment="Top">
+            <Grid HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="imuGrid" VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <charting:Chart BorderThickness="0" Grid.Column="0" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="imuYPRBarChart" VerticalAlignment="Stretch" Title="IMU YPR">
+                    <charting:Chart.Axes>
+                        <charting:LinearAxis Orientation="Y" Minimum="-180" Maximum="180" Title="Degrees"/>
+                    </charting:Chart.Axes>
+                    <charting:Chart.LegendStyle>
+                        <Style TargetType="{x:Type Control}">
+                            <Setter Property="Width" Value="0"/>
+                            <Setter Property="Height" Value="0"/>
+                        </Style>
+                    </charting:Chart.LegendStyle>
+                    <charting:ColumnSeries Title="YPR" IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding}"/>
+                </charting:Chart>
+                <charting:Chart BorderThickness="0" Grid.Column="1" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="imuRateBarChart" VerticalAlignment="Stretch" Title="IMU Rate">
+                    <charting:Chart.Axes>
+                        <charting:LinearAxis Orientation="Y" Minimum="-180" Maximum="180" Title="Degrees per second"/>
+                    </charting:Chart.Axes>
+                    <charting:Chart.LegendStyle>
+                        <Style TargetType="{x:Type Control}">
+                            <Setter Property="Width" Value="0"/>
+                            <Setter Property="Height" Value="0"/>
+                        </Style>
+                    </charting:Chart.LegendStyle>
+                    <charting:ColumnSeries Title="Rate" IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding}"/>
+                </charting:Chart>
+            </Grid>
+        </TabItem>
+        <TabItem Header="IMU Line" x:Name="imuLineTabItem">
+            <Grid HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="IMULineGrid" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <charting:Chart BorderThickness="0" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="stabIMULineChart" VerticalAlignment="Stretch" Title="Stability IMU">
+                    <charting:LineSeries Title="Yaw" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding StabIMULineGraphData[0]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkRed" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Pitch"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding StabIMULineGraphData[1]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkBlue" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Roll"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding StabIMULineGraphData[2]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkGray" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                </charting:Chart>
+                <charting:Chart BorderThickness="0" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="rateIMULineChart" VerticalAlignment="Stretch" Title="Rate IMU">
+                    <charting:LineSeries Title="Yaw" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding RateIMULineGraphData[0]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkRed" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Pitch"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding RateIMULineGraphData[1]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkBlue" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Roll"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding RateIMULineGraphData[2]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkGray" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                </charting:Chart>
+            </Grid>
+        </TabItem>
+        <TabItem Header="GPS" x:Name="gpsTabItem">
+            <Grid HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="gpsGrid" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Label x:Name="latitudeLabel" Content="Latitude: " Grid.Row="0" Grid.Column="0"/>
+                <Label x:Name="longitudeLabel" Content="Longitude: " Grid.Row="1" Grid.Column="0"/>
+                <Label x:Name="altitudeLabel" Content="Altitude: " Grid.Row="2" Grid.Column="0"/>
+                <Label x:Name="courseLabel" Content="Course: " Grid.Row="3" Grid.Column="0"/>
+                <Label x:Name="speedLabel" Content="Speed: " Grid.Row="4" Grid.Column="0"/>
+                <Label x:Name="gpsConnectedLabel" Content="Connected: " Grid.Row="5" Grid.Column="0"/>
+                <m:Map CredentialsProvider="As6tWK9vMMdPiAvWG7ORsqFRX9p699fGNbE9to0fSA-rVq3tzZrG5-GWgPdeJuk8" ZoomLevel="16" Mode="Aerial" x:Name="Map" MouseDoubleClick="MapWithPushpins_MouseDoubleClick"  Grid.Row="6" Grid.Column="0"/>
+            </Grid>
+        </TabItem>
+        <TabItem Header="RC Bar" x:Name="rcBarTabItem">
+            <Grid HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="RCBarGrid" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <charting:Chart BorderThickness="0" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="mappedRCBarChart" VerticalAlignment="Stretch" Title="Mapped RC">
+                    <charting:Chart.Axes>
+                        <charting:LinearAxis Orientation="Y" Minimum="-90" Maximum="90" Title="Value"/>
+                    </charting:Chart.Axes>
+                    <charting:Chart.LegendStyle>
+                        <Style TargetType="{x:Type Control}">
+                            <Setter Property="Width" Value="0"/>
+                            <Setter Property="Height" Value="0"/>
+                        </Style>
+                    </charting:Chart.LegendStyle>
+                    <charting:ColumnSeries IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding}"/>
+                </charting:Chart>
+                <charting:Chart BorderThickness="0" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="rawRCBarChart" VerticalAlignment="Stretch" Title="Raw RC">
+                    <charting:Chart.Axes>
+                        <charting:LinearAxis Orientation="Y" Minimum="0" Maximum="1" Title="Value"/>
+                    </charting:Chart.Axes>
+                    <charting:Chart.LegendStyle>
+                        <Style TargetType="{x:Type Control}">
+                            <Setter Property="Width" Value="0"/>
+                            <Setter Property="Height" Value="0"/>
+                        </Style>
+                    </charting:Chart.LegendStyle>
+                    <charting:ColumnSeries Title="PID" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding}"/>
+                </charting:Chart>
+            </Grid>
+        </TabItem>
+        <TabItem Header="RC Line" x:Name="rcLineTabItem">
+            <Grid HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="RCLineGrid" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <charting:Chart BorderThickness="0" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="mappedRCLineChart" VerticalAlignment="Stretch" Title="Mapped RC">
+                    <charting:LineSeries Title="Yaw" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding MappedRCLineGraphData[0]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkRed" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Pitch"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding MappedRCLineGraphData[1]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkBlue" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Roll"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding MappedRCLineGraphData[2]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkGray" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Thrust"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding MappedRCLineGraphData[3]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkGreen" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                </charting:Chart>
+                <charting:Chart BorderThickness="0" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="rawRCLineChart" VerticalAlignment="Stretch" Title="Raw RC">
+                    <charting:LineSeries Title="Channel 1" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding RawRCLineGraphData[0]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkRed" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Channel 2" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding RawRCLineGraphData[1]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkBlue" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Channel 3" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding RawRCLineGraphData[2]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkGray" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Channel 4" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding RawRCLineGraphData[3]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkGreen" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Channel 5" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding RawRCLineGraphData[4]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkMagenta" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Channel 6" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding RawRCLineGraphData[5]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkSalmon" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Channel 7" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding RawRCLineGraphData[6]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkTurquoise" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Channel 8" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding RawRCLineGraphData[8]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DeepPink" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                </charting:Chart>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Altitude" x:Name="altitudeLineTabItem">
+            <Grid HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="AltitudeLineGrid" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <charting:Chart BorderThickness="0" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="localAltitudeLineChart" VerticalAlignment="Stretch" Title="Local Altitude">
+             
+                    <charting:LineSeries Title="Computed" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding AltitudeLineGraphData[2]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkGreen" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Lidar" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding AltitudeLineGraphData[3]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkGray" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Barometer"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding AltitudeLineGraphData[1]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkRed" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Acceleration"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding AltitudeLineGraphData[0]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkBlue" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                </charting:Chart>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Accelerometer" x:Name="velocityLineTabItem">
+            <Grid HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="VelocityLineGrid" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <charting:Chart BorderThickness="0" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="velocityLineChart" VerticalAlignment="Stretch" Title="Accelerometer">
+                    <charting:LineSeries Title="Accel X" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding VelocityLineGraphData[0]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkRed" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Accel Y"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding VelocityLineGraphData[1]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkBlue" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Accel Z" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding VelocityLineGraphData[2]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkGreen" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                </charting:Chart>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Lidar" x:Name="lidarLineTabItem">
+            <Grid HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="LidarLineGrid" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <charting:Chart BorderThickness="0" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="lidarLineChart" VerticalAlignment="Stretch" Title="Lidar">
+                    <charting:LineSeries Title="Lidar Distance (cm)" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding LidarLineGraphData[2]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkRed" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Pitch (degrees)"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding LidarLineGraphData[0]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkBlue" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Roll (degrees)" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding LidarLineGraphData[1]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkGreen" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                </charting:Chart>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Altitude Mode" x:Name="altitudeModeLineTabItem">
+            <Grid HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="AltitudeModeLineGrid" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <charting:Chart BorderThickness="0" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="altitudeModeLineChart" VerticalAlignment="Stretch" Title="Altitude Mode">
+                    <charting:LineSeries Title="Climb Rate" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding AltitudeModeLineGraphData[0]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkRed" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Target Altitude"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding AltitudeModeLineGraphData[1]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkBlue" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Throttle" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding AltitudeModeLineGraphData[2]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkGreen" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Computed Altitude" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding AltitudeModeLineGraphData[3]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="Blue" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Velocity" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding AltitudeModeLineGraphData[4]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="Red" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                </charting:Chart>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Zero" x:Name="zeroTabItem">
+            <Grid HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="controlGrid" VerticalAlignment="Stretch" ShowGridLines="False">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Label x:Name="zeroPitchLabel" Content="Zero Pitch: " Grid.Row="0" Grid.Column="0"/>
+                <Label x:Name="zeroRollLabel" Content="Zero Roll: " Grid.Row="1" Grid.Column="0"/>
+                <Button Grid.Row="3" Content="Zero Offset" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="zeroOffsetButton" VerticalAlignment="Top" Click="zeroOffsetButton_Click"/>
+            </Grid>
+        </TabItem>
+        <TabItem Header="PID Settings" x:Name="settingsTabItem">
+            <Grid HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="settingsGrid" VerticalAlignment="Stretch" ShowGridLines="False">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBox Grid.Row="0" Grid.Column="0" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="yawRatePIDControllerPTextBox" VerticalAlignment="Top">
+                    <Binding Path="yawRatePIDControllerP" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="1" Grid.Column="0" Content="Set Yaw Rate PID P" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setYawPID1PButton" VerticalAlignment="Top" Click="setYawPID1PButton_Click" />
+                <TextBox Grid.Row="2" Grid.Column="0" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="yawRatePIDControllerITextBox" VerticalAlignment="Top">
+                    <Binding Path="yawRatePIDControllerI" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="3" Grid.Column="0" Content="Set Yaw Rate PID I" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setYawPID1IButton" VerticalAlignment="Top" Click="setYawPID1IButton_Click" />
+                <TextBox Grid.Row="4" Grid.Column="0" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="yawRatePIDControllerDTextBox" VerticalAlignment="Top">
+                    <Binding Path="yawRatePIDControllerD" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="5" Grid.Column="0" Content="Set Yaw Rate PID D" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setYawPID1DButton" VerticalAlignment="Top" Click="setYawPID1DButton_Click" />
+                <TextBox Grid.Row="0" Grid.Column="1" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="pitchRatePIDControllerPTextBox" VerticalAlignment="Top">
+                    <Binding Path="pitchRatePIDControllerP" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="1" Grid.Column="1" Content="Set Pitch Rate PID P" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setPitchPID1PButton" VerticalAlignment="Top" Click="setPitchPID1PButton_Click" />
+                <TextBox Grid.Row="2" Grid.Column="1" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="pitchRatePIDControllerITextBox" VerticalAlignment="Top">
+                    <Binding Path="pitchRatePIDControllerI" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="3" Grid.Column="1" Content="Set Pitch Rate PID I" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setPitchPID1IButton" VerticalAlignment="Top" Click="setPitchPID1IButton_Click" />
+                <TextBox Grid.Row="4" Grid.Column="1" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="pitchRatePIDControllerDTextBox" VerticalAlignment="Top">
+                    <Binding Path="pitchRatePIDControllerD" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="5" Grid.Column="1" Content="Set Pitch Rate PID D" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setPitchPID1DButton" VerticalAlignment="Top" Click="setPitchPID1DButton_Click" />
+                <TextBox Grid.Row="0" Grid.Column="3" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="rollRatePIDControllerPTextBox" VerticalAlignment="Top">
+                    <Binding Path="rollRatePIDControllerP" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="1" Grid.Column="3" Content="Set Roll Rate PID P" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setRollPID1PButton" VerticalAlignment="Top" Click="setRollPID1PButton_Click" />
+                <TextBox Grid.Row="2" Grid.Column="3" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="rollRatePIDControllerITextBox" VerticalAlignment="Top">
+                    <Binding Path="rollRatePIDControllerI" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="3" Grid.Column="3" Content="Set Roll Rate PID I" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setRollPID1IButton" VerticalAlignment="Top" Click="setRollPID1IButton_Click" />
+                <TextBox Grid.Row="4" Grid.Column="3" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="rollRatePIDControllerDTextBox" VerticalAlignment="Top">
+                    <Binding Path="rollRatePIDControllerD" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="5" Grid.Column="3" Content="Set Roll Rate PID D" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setRollPID1DButton" VerticalAlignment="Top" Click="setRollPID1DButton_Click" />
+                <TextBox Grid.Row="6" Grid.Column="0" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="yawStabPIDControllerPTextBox" VerticalAlignment="Top">
+                    <Binding Path="yawStabPIDControllerP" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="7" Grid.Column="0" Content="Set Yaw Stab PID P" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setYawPID2PButton" VerticalAlignment="Top" Click="setYawPID2PButton_Click" />
+                <TextBox Grid.Row="8" Grid.Column="0" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="yawStabPIDControllerITextBox" VerticalAlignment="Top">
+                    <Binding Path="yawStabPIDControllerI" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="9" Grid.Column="0" Content="Set Yaw Stab PID I" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setYawPID2IButton" VerticalAlignment="Top" Click="setYawPID2IButton_Click" />
+                <TextBox Grid.Row="10" Grid.Column="0" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="yawStabPIDControllerDTextBox" VerticalAlignment="Top">
+                    <Binding Path="yawStabPIDControllerD" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="11" Grid.Column="0" Content="Set Yaw Stab PID D" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setYawPID2DButton" VerticalAlignment="Top" Click="setYawPID2DButton_Click" />
+                <TextBox Grid.Row="6" Grid.Column="1" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="pitchStabPIDControllerPTextBox" VerticalAlignment="Top">
+                    <Binding Path="pitchStabPIDControllerP" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="7" Grid.Column="1" Content="Set Pitch Stab PID P" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setPitchPID2PButton" VerticalAlignment="Top" Click="setPitchPID2PButton_Click" />
+                <TextBox Grid.Row="8" Grid.Column="1" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="pitchStabPIDControllerITextBox" VerticalAlignment="Top">
+                    <Binding Path="pitchStabPIDControllerI" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="9" Grid.Column="1" Content="Set Pitch Stab PID I" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setPitchPID2IButton" VerticalAlignment="Top" Click="setPitchPID2IButton_Click" />
+                <TextBox Grid.Row="10" Grid.Column="1" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="pitchStabPIDControllerDTextBox" VerticalAlignment="Top">
+                    <Binding Path="pitchStabPIDControllerD" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="11" Grid.Column="1" Content="Set Pitch Stab PID D" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setPitchPID2DButton" VerticalAlignment="Top" Click="setPitchPID2DButton_Click" />
+                <TextBox Grid.Row="6" Grid.Column="3" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="rollStabPIDControllerPTextBox" VerticalAlignment="Top">
+                    <Binding Path="rollStabPIDControllerP" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="7" Grid.Column="3" Content="Set Roll Stab PID P" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setRollPID2PButton" VerticalAlignment="Top" Click="setRollPID2PButton_Click" />
+                <TextBox Grid.Row="8" Grid.Column="3" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="rollStabPIDControllerITextBox" VerticalAlignment="Top">
+                    <Binding Path="rollStabPIDControllerI" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="9" Grid.Column="3" Content="Set Roll Stab PID I" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setRollPID2IButton" VerticalAlignment="Top" Click="setRollPID2IButton_Click" />
+                <TextBox Grid.Row="10" Grid.Column="3" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="rollStabPIDControllerDTextBox" VerticalAlignment="Top">
+                    <Binding Path="rollStabPIDControllerD" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="11" Grid.Column="3" Content="Set Roll Stab PID D" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setRollPID2DButton" VerticalAlignment="Top" Click="setRollPID2DButton_Click" />
+                <TextBox Grid.Row="12" Grid.Column="0" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="altitudeRatePIDControllerPTextBox" VerticalAlignment="Top">
+                    <Binding Path="altitudeRatePIDControllerP" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="13" Grid.Column="0" Content="Set Altitude Rate PID P" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setAltitudeRatePIDControllerPButton" VerticalAlignment="Top" Click="setAltitudeRatePIDPButton_Click" />
+                <TextBox Grid.Row="14" Grid.Column="0" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="altitudeRatePIDControllerITextBox" VerticalAlignment="Top">
+                    <Binding Path="altitudeRatePIDControllerI" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="15" Grid.Column="0" Content="Set Altitude Rate PID I" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setAltitudeRatePIDControllerIButton" VerticalAlignment="Top" Click="setAltitudeRatePIDIButton_Click" />
+                <TextBox Grid.Row="16" Grid.Column="0" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="altitudeRatePIDControllerDTextBox" VerticalAlignment="Top">
+                    <Binding Path="altitudeRatePIDControllerD" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="17" Grid.Column="0" Content="Set Altitude Rate PID D" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setAltitudeRatePIDControllerDButton" VerticalAlignment="Top" Click="setAltitudeRatePIDDButton_Click" />
+                <TextBox Grid.Row="12" Grid.Column="1" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="altitudeStabPIDControllerPTextBox" VerticalAlignment="Top">
+                    <Binding Path="altitudeStabPIDControllerP" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="13" Grid.Column="1" Content="Set Altitude Stab PID P" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setAltitudeStabPIDControllerPButton" VerticalAlignment="Top" Click="setAltitudeStabPIDPButton_Click" />
+                <TextBox Grid.Row="14" Grid.Column="1" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="altitudeStabPIDControllerITextBox" VerticalAlignment="Top">
+                    <Binding Path="altitudeStabPIDControllerI" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="15" Grid.Column="1" Content="Set Altitude Stab PID I" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setAltitudeStabPIDControllerIButton" VerticalAlignment="Top" Click="setAltitudeStabPIDIButton_Click" />
+                <TextBox Grid.Row="16" Grid.Column="1" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="altitudeStabPIDControllerDTextBox" VerticalAlignment="Top">
+                    <Binding Path="altitudeStabPIDControllerD" Source="{StaticResource ods}" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <c:DoubleValidationRule Min="0" Max="100"/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Button Grid.Row="17" Grid.Column="1" Content="Set Altitude Stab PID D" Height="23" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="setAltitudeStabPIDControllerDButton" VerticalAlignment="Top" Click="setAltitudeStabPIDDButton_Click" />
+            </Grid>
+        </TabItem>
+        <TabItem Header="Rate Tuning" x:Name="rateTuningTabItem">
+            <Grid HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="RateTuningGrid" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <charting:Chart BorderThickness="0" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="yawTuningRateLineChart" VerticalAlignment="Stretch" Title="Rate Yaw">
+                    <charting:LineSeries Title="Set point" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding YawTuningRateLineGraphData[0]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkRed" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Actual"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding YawTuningRateLineGraphData[1]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkBlue" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="PID Output"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding YawTuningRateLineGraphData[2]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkGray" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                </charting:Chart>
+                <charting:Chart BorderThickness="0" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="pitchTuningRateLineChart" VerticalAlignment="Stretch" Title="Rate Pitch">
+                    <charting:LineSeries Title="Set point" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding PitchTuningRateLineGraphData[0]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkRed" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Actual"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding PitchTuningRateLineGraphData[1]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkBlue" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="PID Output"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding PitchTuningRateLineGraphData[2]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkGray" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                </charting:Chart>
+                <charting:Chart BorderThickness="0" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="rollTuningRateLineChart" VerticalAlignment="Stretch" Title="Rate Roll">
+                    <charting:LineSeries Title="Set point" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding RollTuningRateLineGraphData[0]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkRed" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Actual"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding RollTuningRateLineGraphData[1]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkBlue" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="PID Output"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding RollTuningRateLineGraphData[2]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkGray" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                </charting:Chart>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Stab Tuning" x:Name="stabTuningTabItem">
+            <Grid HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="StabTuningGrid" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <charting:Chart BorderThickness="0" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="yawTuningStabLineChart" VerticalAlignment="Stretch" Title="Stab Yaw">
+                    <charting:LineSeries Title="Set point" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding YawTuningStabLineGraphData[0]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkRed" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Actual"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding YawTuningStabLineGraphData[1]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkBlue" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="PID Output"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding YawTuningStabLineGraphData[2]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkGray" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                </charting:Chart>
+                <charting:Chart BorderThickness="0" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="pitchTuningStabLineChart" VerticalAlignment="Stretch" Title="Stab Pitch">
+                    <charting:LineSeries Title="Set point" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding PitchTuningStabLineGraphData[0]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkRed" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Actual"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding PitchTuningStabLineGraphData[1]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkBlue" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="PID Output"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding PitchTuningStabLineGraphData[2]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkGray" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                </charting:Chart>
+                <charting:Chart BorderThickness="0" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Stretch" Margin="6,6,6,6" x:Name="rollTuningStabLineChart" VerticalAlignment="Stretch" Title="Stab Roll">
+                    <charting:LineSeries Title="Set point" 
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding RollTuningStabLineGraphData[0]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkRed" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="Actual"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding RollTuningStabLineGraphData[1]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkBlue" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                    <charting:LineSeries Title="PID Output"
+						IndependentValueBinding="{Binding Key}"
+						DependentValueBinding="{Binding Value}"
+						ItemsSource="{Binding RollTuningStabLineGraphData[2]}">
+                        <charting:LineSeries.DataPointStyle>
+                            <Style TargetType="{x:Type charting:LineDataPoint}">
+                                <Setter Property="Width" Value="5" />
+                                <Setter Property="Height" Value="5" />
+                                <Setter Property="Background" Value="DarkGray" />
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Opacity" Value="0" />
+                            </Style>
+                        </charting:LineSeries.DataPointStyle>
+                    </charting:LineSeries>
+                </charting:Chart>
+            </Grid>
+        </TabItem>
+    </TabControl>
+</Window>
